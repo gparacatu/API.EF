@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Serilog;
 using System.Net;
 
 namespace API.EF.Extensions
@@ -15,15 +16,23 @@ namespace API.EF.Extensions
                     context.Response.ContentType = "application/json";
 
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    var guid = Guid.NewGuid().ToString();
                     if (contextFeature != null)
                     {
                         await context.Response.WriteAsync(new ErrorDetails()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = contextFeature.Error.Message,
-                            Trace = contextFeature.Error.StackTrace
+                            Message = "Ocorreu um erro, entre em contato com o suporte.",
+                            Trace = guid
 
                         }.ToString());
+
+                        Log.Error($"==============================ERROR EXCEPTION INIT | GUID: {guid} ==============================");
+                        Log.Error("===Status Code: " + context.Response.StatusCode);
+                        Log.Error("===Message: " + contextFeature.Error.Message);
+                        Log.Error("===Trace: " + contextFeature.Error.StackTrace);
+                        Log.Error($"==============================ERROR EXCEPTION FINAL | GUID: {guid} ==============================");
+
                     }
                 }
                 );
@@ -34,3 +43,5 @@ namespace API.EF.Extensions
 }
 //Method for Middleware Exception
 //app.ConfigureExceptionHandler();
+
+//Recomendado gravar em tabela do banco o GUID / DataHora

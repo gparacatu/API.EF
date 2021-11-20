@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.EF.Models
 {
@@ -12,6 +13,7 @@ namespace API.EF.Models
         [Required]
         public decimal Valor { get; set; }
         public Categoria? Categoria { get; set; }
+        //[BindNever]
         public int CategoriaId { get; set; }
     }
 }
