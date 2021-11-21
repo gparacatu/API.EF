@@ -22,7 +22,7 @@ namespace API.EF.Extensions
                         await context.Response.WriteAsync(new ErrorDetails()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = "Ocorreu um erro, entre em contato com o suporte.",
+                            Message = "An error was encountered. Contact technical support.",
                             Trace = guid
 
                         }.ToString());
