@@ -22,14 +22,14 @@ namespace API.EF.Repository.Base
             _context.Set<T>().Remove(entity);
         }
 
-        public List<T> Get()
+        public IQueryable<T> Get()
         {
-            return _context.Set<T>().AsNoTracking().ToList();
+            return _context.Set<T>().AsNoTracking();
         }
 
-        public T GetById(Expression<Func<T, bool>> predicate)
+        public async Task<T> GetById(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().FirstOrDefault(predicate);
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
         public void Update(T entity)

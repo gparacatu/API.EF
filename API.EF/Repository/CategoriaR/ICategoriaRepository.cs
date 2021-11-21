@@ -4,6 +4,6 @@ namespace API.EF.Repository.CategoriaR
 {
     public interface ICategoriaRepository : IBaseRepository<Categoria>
     {
-        List<Categoria> GetByDescription(string description);
+        Task<List<Categoria>> GetByDescription(string description);
     }
 }

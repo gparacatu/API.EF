@@ -1,6 +1,7 @@
 ﻿using API.EF.Infra;
 using API.EF.Models;
 using API.EF.Repository.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.EF.Repository.ProdutoR
 {
@@ -11,9 +12,9 @@ namespace API.EF.Repository.ProdutoR
 
         }
 
-        public List<Produto> GetByDescription(string description)
+        public async Task<List<Produto>> GetByDescription(string description)
         {
-            return Get().Where(p => p.Descricao.Contains(description)).ToList();
+            return await Get().Where(p => p.Descricao.Contains(description)).ToListAsync();
         }
     }
 }

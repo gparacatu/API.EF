@@ -21,9 +21,9 @@ namespace API.EF.Controllers
         }
 
         [HttpGet("nome/{nome}")]
-        public ActionResult<List<ProdutoDTO>> GetByDescription(string nome)
+        public async Task<ActionResult<List<ProdutoDTO>>> GetByDescription(string nome)
         {
-            var produtos = _uow.ProdutoRepository.GetByDescription(nome);
+            var produtos = await _uow.ProdutoRepository.GetByDescription(nome);
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
 
             return produtosDTO; 
@@ -31,18 +31,18 @@ namespace API.EF.Controllers
 
         // GET: api/Produtos
         [HttpGet]
-        public ActionResult<List<ProdutoDTO>> GetProdutos()
+        public async Task<ActionResult<List<ProdutoDTO>>> GetProdutos()
         {
-            var produtos = _uow.ProdutoRepository.Get();
+            var produtos = await _uow.ProdutoRepository.Get().ToListAsync();
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDTO;
         }
 
         // GET: api/Produtos/5
         [HttpGet("{id}")]
-        public ActionResult<ProdutoDTO> GetProduto(int id)
+        public async Task<ActionResult<ProdutoDTO>> GetProduto(int id)
         {
-            var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            var produto = await _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
             if (produto == null)
             {
@@ -104,7 +104,7 @@ namespace API.EF.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<ProdutoDTO>> DeleteProduto(int id)
         {
-            var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            var produto = await _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
             if(produto == null)
             {
                 return NotFound();

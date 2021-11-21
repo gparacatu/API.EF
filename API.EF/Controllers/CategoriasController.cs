@@ -22,9 +22,9 @@ namespace API.EF.Controllers
 
         // GET: api/Categorias
         [HttpGet]
-        public ActionResult<List<CategoriaDTO>> GetCategorias()
+        public async Task<ActionResult<List<CategoriaDTO>>> GetCategorias()
         {
-            var categoria = _uow.CategoriaRepository.Get();
+            var categoria = await _uow.CategoriaRepository.Get().ToListAsync();
 
             var categoriaDTO = _mapper.Map<List<CategoriaDTO>>(categoria);
 
@@ -33,9 +33,9 @@ namespace API.EF.Controllers
 
         // GET: api/Categorias/5
         [HttpGet("{id}")]
-        public ActionResult<CategoriaDTO> GetCategoria(int id)
+        public async Task<ActionResult<CategoriaDTO>> GetCategoria(int id)
         {
-            var categoria = _uow.CategoriaRepository.GetById(p => p.CategoriaId == id);
+            var categoria = await _uow.CategoriaRepository.GetById(p => p.CategoriaId == id);
             if (categoria == null)
             {
                 return NotFound();
@@ -47,9 +47,9 @@ namespace API.EF.Controllers
         }
 
         [HttpGet("nome/{nome}")]
-        public ActionResult<List<CategoriaDTO>> GetByDescription(string nome)
+        public async Task<ActionResult<List<CategoriaDTO>>> GetByDescription(string nome)
         {
-            var categoria = _uow.CategoriaRepository.GetByDescription(nome);
+            var categoria = await _uow.CategoriaRepository.GetByDescription(nome);
 
             return _mapper.Map<List<CategoriaDTO>>(categoria);
 
@@ -110,7 +110,7 @@ namespace API.EF.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCategoria(int id)
         {
-            var categoria = _uow.CategoriaRepository.GetById(c => c.CategoriaId == id);
+            var categoria = await _uow.CategoriaRepository.GetById(c => c.CategoriaId == id);
             if (categoria == null)
             {
                 return NotFound();

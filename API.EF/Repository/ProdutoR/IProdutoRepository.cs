@@ -5,6 +5,6 @@ namespace API.EF.Repository.ProdutoR
 {
     public interface IProdutoRepository : IBaseRepository<Produto>
     {
-        List<Produto> GetByDescription(string description);
+        Task<List<Produto>> GetByDescription(string description);
     }
 }
