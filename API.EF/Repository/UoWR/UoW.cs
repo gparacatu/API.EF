@@ -8,9 +8,9 @@ namespace API.EF.Repository.UOWR
     {
         private ProdutoRepository _produtoRepository;
         private CategoriaRepository _categoriaRepository;
-        public IUoW _context;
+        public AppDbContext _context;
 
-        public UOW(IUoW context)
+        public UOW(AppDbContext context)
         {
             _context = context;
         }

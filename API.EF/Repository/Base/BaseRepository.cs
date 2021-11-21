@@ -6,8 +6,8 @@ namespace API.EF.Repository.Base
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        protected IUoW _context;
-        public BaseRepository(IUoW context)
+        protected AppDbContext _context;
+        public BaseRepository(AppDbContext context)
         {
             _context = context;
         }

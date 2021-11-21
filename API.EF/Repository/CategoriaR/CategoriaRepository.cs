@@ -6,7 +6,7 @@ namespace API.EF.Repository.CategoriaR
 {
     public class CategoriaRepository : BaseRepository<Categoria>, ICategoriaRepository
     {
-        public CategoriaRepository(IUoW context) : base(context)
+        public CategoriaRepository(AppDbContext context) : base(context)
         {
 
         }

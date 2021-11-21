@@ -43,7 +43,7 @@ try
 
     //DbContext Mysql
     var connectionString = builder.Configuration.GetConnectionString("Default");
-    builder.Services.AddDbContext<IUoW>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
     builder.Services.AddControllers().AddJsonOptions(options =>
     {
