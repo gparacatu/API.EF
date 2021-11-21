@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using API.EF.Models;
+using API.EF.Models.DTOs;
+using API.EF.Repository.UOWR;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.EF.Infra;
-using API.EF.Models;
 
 namespace API.EF.Controllers
 {
@@ -14,49 +11,64 @@ namespace API.EF.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUOW _uow;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(IUOW context, IMapper mapper)
         {
-            _context = context;
+            _uow = context;
+            _mapper = mapper;
+        }
+
+        [HttpGet("nome/{nome}")]
+        public ActionResult<List<ProdutoDTO>> GetByDescription(string nome)
+        {
+            var produtos = _uow.ProdutoRepository.GetByDescription(nome);
+            var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
+
+            return produtosDTO; 
         }
 
         // GET: api/Produtos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> GetProdutos()
+        public ActionResult<List<ProdutoDTO>> GetProdutos()
         {
-            return await _context.Produtos.AsNoTracking().ToListAsync();
+            var produtos = _uow.ProdutoRepository.Get();
+            var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
+            return produtosDTO;
         }
 
         // GET: api/Produtos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Produto>> GetProduto(int id)
+        public ActionResult<ProdutoDTO> GetProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
             if (produto == null)
             {
                 return NotFound();
             }
 
-            return produto;
+            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+            return produtoDTO;
         }
 
         // PUT: api/Produtos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduto(int id, Produto produto)
+        public async Task<IActionResult> PutProduto(int id, ProdutoDTO produtoDTO)
         {
-            if (id != produto.ProdutoId)
+            if (id != produtoDTO.ProdutoId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(produto).State = EntityState.Modified;
+            var produto = _mapper.Map<Produto>(produtoDTO);
+            _uow.ProdutoRepository.Update(produto);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.Commit();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,33 +88,39 @@ namespace API.EF.Controllers
         // POST: api/Produtos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Produto>> PostProduto(Produto produto)
+        public async Task<ActionResult<ProdutoDTO>> PostProduto(ProdutoDTO produtoRequestDTO)
         {
-            _context.Produtos.Add(produto);
-            await _context.SaveChangesAsync();
+            var produto = _mapper.Map<Produto>(produtoRequestDTO);
 
-            return CreatedAtAction("GetProduto", new { id = produto.ProdutoId }, produto);
+            _uow.ProdutoRepository.Add(produto);
+            await _uow.Commit();
+
+            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+
+            return CreatedAtAction("GetProduto", new { id = produto.ProdutoId }, produtoDTO);
         }
 
         // DELETE: api/Produtos/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduto(int id)
+        public async Task<ActionResult<ProdutoDTO>> DeleteProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
-            if (produto == null)
+            var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            if(produto == null)
             {
                 return NotFound();
             }
 
-            _context.Produtos.Remove(produto);
-            await _context.SaveChangesAsync();
+            _uow.ProdutoRepository.Delete(produto);
+            await _uow.Commit();
 
-            return NoContent();
+            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+
+            return Ok(produtoDTO);
         }
 
         private bool ProdutoExists(int id)
         {
-            return _context.Produtos.Any(e => e.ProdutoId == id);
+            return _uow.ProdutoRepository.Get().Any(e => e.ProdutoId == id);
         }
     }
 }

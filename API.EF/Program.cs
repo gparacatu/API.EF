@@ -5,6 +5,9 @@
 
 using API.EF.Extensions;
 using API.EF.Infra;
+using API.EF.Models.DTOs.Mapping;
+using API.EF.Repository.UOWR;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Extensions.Logging;
@@ -26,8 +29,21 @@ try
         .ReadFrom.Configuration(ctx.Configuration));
 
     // Add services to the container.
+
+    //Config AutoMapper
+    var mappingConfig = new MapperConfiguration(mc =>
+    {
+        mc.AddProfile(new MappingProfile());
+    });
+    IMapper mapper = mappingConfig.CreateMapper();
+    builder.Services.AddSingleton(mapper);
+
+    //Unit Of Work injeção
+    builder.Services.AddScoped<IUOW, UOW>();
+
+    //DbContext Mysql
     var connectionString = builder.Configuration.GetConnectionString("Default");
-    builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    builder.Services.AddDbContext<IUoW>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
     builder.Services.AddControllers().AddJsonOptions(options =>
     {
